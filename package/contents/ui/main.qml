@@ -114,7 +114,12 @@ PlasmoidItem {
             PlasmaComponents.Button {
                 Layout.alignment: Qt.AlignHCenter
                 text: "Save to KWallet"
-                onClicked: usage.save_credentials(urlField.text, userField.text, passField.text)
+                onClicked: {
+                    usage.save_credentials(urlField.text, userField.text, passField.text)
+                    urlField.text = ""
+                    userField.text = ""
+                    passField.text = ""
+                }
             }
         }
 
@@ -169,7 +174,7 @@ PlasmoidItem {
             Layout.alignment: Qt.AlignHCenter
             flat: true
             text: "Reconfigure"
-            onClicked: usage.configured = false
+            onClicked: usage.clear_credentials()
         }
     }
 

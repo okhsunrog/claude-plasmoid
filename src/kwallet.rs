@@ -39,6 +39,9 @@ trait KWallet {
 
     #[zbus(name = "hasEntry")]
     fn has_entry(&self, handle: i32, folder: &str, key: &str, appid: &str) -> zbus::Result<bool>;
+
+    #[zbus(name = "removeEntry")]
+    fn remove_entry(&self, handle: i32, folder: &str, key: &str, appid: &str) -> zbus::Result<i32>;
 }
 
 pub struct Credentials {
@@ -99,6 +102,24 @@ pub fn write_credentials(url: &str, username: &str, password: &str) -> Result<()
     proxy
         .write_password(handle, FOLDER, "password", password, APP_ID)
         .map_err(|e| e.to_string())?;
+
+    let _ = proxy.close(handle, false, APP_ID);
+    Ok(())
+}
+
+pub fn delete_credentials() -> Result<(), String> {
+    let conn = Connection::session().map_err(|e| e.to_string())?;
+    let proxy = KWalletProxyBlocking::new(&conn).map_err(|e| e.to_string())?;
+
+    let wallet = proxy.network_wallet().map_err(|e| e.to_string())?;
+    let handle = proxy.open(&wallet, 0, APP_ID).map_err(|e| e.to_string())?;
+    if handle < 0 {
+        return Err("KWallet is locked or unavailable".to_string());
+    }
+
+    let _ = proxy.remove_entry(handle, FOLDER, "url", APP_ID);
+    let _ = proxy.remove_entry(handle, FOLDER, "username", APP_ID);
+    let _ = proxy.remove_entry(handle, FOLDER, "password", APP_ID);
 
     let _ = proxy.close(handle, false, APP_ID);
     Ok(())

@@ -33,6 +33,9 @@ pub mod qobject {
             username: &QString,
             password: &QString,
         );
+
+        #[qinvokable]
+        fn clear_credentials(self: Pin<&mut Self>);
     }
 
     impl cxx_qt::Threading for ClaudeUsage {}
@@ -193,6 +196,18 @@ impl qobject::ClaudeUsage {
                 self.refresh();
             }
             Err(e) => self.as_mut().set_error(QString::from(&e)),
+        }
+    }
+
+    fn clear_credentials(mut self: Pin<&mut Self>) {
+        match kwallet::delete_credentials() {
+            Ok(()) => {
+                self.as_mut().set_configured(false);
+                self.as_mut().set_error(QString::from(""));
+            }
+            Err(e) => {
+                self.as_mut().set_error(QString::from(&e));
+            }
         }
     }
 }
