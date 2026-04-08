@@ -56,8 +56,8 @@ pub struct ClaudeUsageRust {
     seven_day_sonnet_util: f64,
     seven_day_sonnet_resets_at: QString,
     extra_usage_util: f64,
-    extra_usage_used: f64,
-    extra_usage_limit: f64,
+    extra_usage_used: f64,    // in cents (divide by 100 for USD)
+    extra_usage_limit: f64,   // in cents (divide by 100 for USD)
     extra_usage_enabled: bool,
     error: QString,
     configured: bool,

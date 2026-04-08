@@ -33,6 +33,7 @@ PlasmoidItem {
             anchors.centerIn: parent
             spacing: 6
 
+            // 5-hour session window (orange — semantic session color)
             DonutChart {
                 size: compactRoot.donutSize
                 value: usage.five_hour_util
@@ -40,6 +41,7 @@ PlasmoidItem {
                 label: ""
             }
 
+            // 7-day weekly limit (purple — semantic weekly color)
             DonutChart {
                 size: compactRoot.donutSize
                 value: usage.seven_day_util
@@ -154,6 +156,7 @@ PlasmoidItem {
                 visible: usage.extra_usage_enabled
                 title: "EXTRA USAGE"
                 util: usage.extra_usage_util
+                // API returns extra_usage_* in cents, so divide by 100 for USD
                 subtitle: "$" + (usage.extra_usage_used / 100).toFixed(2) + " / $" + (usage.extra_usage_limit / 100).toFixed(2) + " spent"
             }
         }
@@ -185,9 +188,9 @@ PlasmoidItem {
         property string subtitle: ""
 
         implicitHeight: col.implicitHeight + Kirigami.Units.smallSpacing * 2
-        color: Qt.rgba(1, 1, 1, 0.04)
+        color: Kirigami.Theme.alternateBackgroundColor
         radius: 4
-        border.color: Qt.rgba(1, 1, 1, 0.08)
+        border.color: Kirigami.Theme.separatorColor
         border.width: 1
 
         ColumnLayout {
@@ -212,7 +215,7 @@ PlasmoidItem {
                 Layout.fillWidth: true
                 height: 3
                 radius: 1
-                color: Qt.rgba(1, 1, 1, 0.08)
+                color: Kirigami.Theme.separatorColor
                 Rectangle {
                     width: parent.width * Math.max(0, Math.min(100, card.util)) / 100
                     height: parent.height

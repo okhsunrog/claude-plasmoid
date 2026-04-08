@@ -55,6 +55,8 @@ pub fn read_credentials() -> Result<Credentials, String> {
     let proxy = KWalletProxyBlocking::new(&conn).map_err(|e| e.to_string())?;
 
     let wallet = proxy.network_wallet().map_err(|e| e.to_string())?;
+    // wid=0: plasmoids don't have a meaningful X11/Wayland window ID. kwalletd falls back to
+    // centering the unlock dialog on screen, which is acceptable.
     let handle = proxy.open(&wallet, 0, APP_ID).map_err(|e| e.to_string())?;
     if handle < 0 {
         return Err("KWallet is locked or unavailable".to_string());
