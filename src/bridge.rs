@@ -46,6 +46,7 @@ use core::pin::Pin;
 use cxx_qt::Threading;
 use cxx_qt_lib::QString;
 use serde::Deserialize;
+use std::sync::OnceLock;
 
 #[derive(Default)]
 pub struct ClaudeUsageRust {
@@ -212,6 +213,17 @@ impl qobject::ClaudeUsage {
     }
 }
 
+static HTTP_CLIENT: OnceLock<reqwest::blocking::Client> = OnceLock::new();
+
+fn get_http_client() -> &'static reqwest::blocking::Client {
+    HTTP_CLIENT.get_or_init(|| {
+        reqwest::blocking::Client::builder()
+            .timeout(std::time::Duration::from_secs(5))
+            .build()
+            .expect("HTTP client initialization failed")
+    })
+}
+
 fn fetch_usage(
     base_url: &str,
     username: &str,
@@ -221,10 +233,7 @@ fn fetch_usage(
     let url = format!("{base}/admin/oauth/usage");
     #[cfg(debug_assertions)]
     eprintln!("[claude-plasmoid] GET {url} as {username}");
-    let client = reqwest::blocking::Client::builder()
-        .timeout(std::time::Duration::from_secs(5))
-        .build()
-        .map_err(|e| e.to_string())?;
+    let client = get_http_client();
     let resp = client
         .get(&url)
         .basic_auth(username, Some(password))
