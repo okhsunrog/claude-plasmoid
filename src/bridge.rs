@@ -89,6 +89,7 @@ enum RefreshError {
 
 impl qobject::ClaudeUsage {
     fn refresh(self: Pin<&mut Self>) {
+        #[cfg(debug_assertions)]
         eprintln!("[claude-plasmoid] refresh() called");
         // Move both KWallet and HTTP off the Qt thread. A locked wallet can
         // block kwalletd6's open() on a password dialog for an arbitrary
@@ -99,6 +100,7 @@ impl qobject::ClaudeUsage {
             let result = kwallet::read_credentials()
                 .map_err(RefreshError::NoCredentials)
                 .and_then(|c| {
+                    #[cfg(debug_assertions)]
                     eprintln!("[claude-plasmoid] KWallet ok, url={}", c.url);
                     fetch_usage(&c.url, &c.username, &c.password).map_err(RefreshError::Http)
                 });
@@ -162,6 +164,7 @@ impl qobject::ClaudeUsage {
                     qobj.as_mut().set_error(QString::from(""));
                 }
                 Err(RefreshError::NoCredentials(e)) => {
+                    #[cfg(debug_assertions)]
                     eprintln!("[claude-plasmoid] KWallet err: {e}");
                     qobj.as_mut().set_configured(false);
                     qobj.as_mut().set_error(QString::from(&e));
@@ -201,6 +204,7 @@ fn fetch_usage(
 ) -> Result<SubscriptionUsage, String> {
     let base = base_url.trim_end_matches('/').trim_end_matches("/admin");
     let url = format!("{base}/admin/oauth/usage");
+    #[cfg(debug_assertions)]
     eprintln!("[claude-plasmoid] GET {url} as {username}");
     let client = reqwest::blocking::Client::builder()
         .timeout(std::time::Duration::from_secs(5))
