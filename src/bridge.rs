@@ -220,6 +220,8 @@ fn get_http_client() -> &'static reqwest::blocking::Client {
         reqwest::blocking::Client::builder()
             .timeout(std::time::Duration::from_secs(5))
             .build()
+            // Safe to expect: Client::build() only fails with custom TLS backends. Panic occurs
+            // in spawned thread, so it won't cross FFI — thread just terminates silently.
             .expect("HTTP client initialization failed")
     })
 }

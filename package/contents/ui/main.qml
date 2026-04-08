@@ -201,13 +201,13 @@ PlasmoidItem {
 
             PlasmaComponents.Label {
                 text: card.title
-                font.pixelSize: 9
+                font: Kirigami.Theme.smallFont
                 font.bold: true
                 color: Kirigami.Theme.disabledTextColor
             }
             PlasmaComponents.Label {
                 text: card.util >= 0 ? Math.round(card.util) + "%" : "—"
-                font.pixelSize: 18
+                font.pointSize: Kirigami.Theme.defaultFont.pointSize * 2
                 font.bold: true
                 color: utilColor(card.util)
             }
@@ -225,7 +225,7 @@ PlasmoidItem {
             }
             PlasmaComponents.Label {
                 text: card.subtitle
-                font.pixelSize: 9
+                font: Kirigami.Theme.smallFont
                 color: Kirigami.Theme.disabledTextColor
                 elide: Text.ElideRight
                 Layout.fillWidth: true
@@ -239,6 +239,8 @@ PlasmoidItem {
         property color color: "#ffffff"
         property string label: ""
         property real size: 100
+        property color ringColor: Kirigami.Theme.separatorColor
+        property color unknownColor: Kirigami.Theme.disabledTextColor
 
         width: size
         height: label !== "" ? size + Kirigami.Units.gridUnit * 1.5 : size
@@ -260,7 +262,7 @@ PlasmoidItem {
                 // Background ring
                 ctx.beginPath()
                 ctx.arc(cx, cy, r, 0, 2 * Math.PI)
-                ctx.strokeStyle = Qt.rgba(1, 1, 1, 0.08)
+                ctx.strokeStyle = donut.ringColor
                 ctx.lineWidth = thick
                 ctx.stroke()
 
@@ -276,7 +278,7 @@ PlasmoidItem {
                 }
 
                 // Center text
-                ctx.fillStyle = donut.value >= 0 ? donut.color : Qt.rgba(1, 1, 1, 0.3)
+                ctx.fillStyle = donut.value >= 0 ? donut.color : donut.unknownColor
                 ctx.font = "bold " + Math.round(width * 0.32) + "px sans-serif"
                 ctx.textAlign = "center"
                 ctx.textBaseline = "middle"
@@ -286,6 +288,8 @@ PlasmoidItem {
             Connections {
                 target: donut
                 function onValueChanged() { canvas.requestPaint() }
+                function onRingColorChanged() { canvas.requestPaint() }
+                function onUnknownColorChanged() { canvas.requestPaint() }
             }
 
             Component.onCompleted: requestPaint()
