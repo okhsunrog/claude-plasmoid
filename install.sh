@@ -1,5 +1,5 @@
 #!/bin/bash
-# install.sh — build and install the Rust Network Monitor Plasma applet
+# install.sh — build and install the Claude Usage Plasma applet
 set -e
 
 APPLET_ID="org.kde.plasma.claudeplasmoid"
