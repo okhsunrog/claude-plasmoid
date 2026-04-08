@@ -1,0 +1,14 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [{ "Name": "okhsunrog" }],
+        "Category": "System Information",
+        "Description": "Claude proxy usage monitor — shows subscription utilization from claude-proxy-rs",
+        "Icon": "text-x-script",
+        "Id": "org.kde.plasma.claudeplasmoid",
+        "License": "MIT",
+        "Name": "Claude Usage",
+        "Website": ""
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

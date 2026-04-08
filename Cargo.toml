@@ -1,0 +1,20 @@
+[package]
+name = "claude-plasmoid"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+cxx-qt = "0.8.1"
+cxx = "=1.0.176"
+cxx-qt-lib = { version = "0.8.1", features = ["qt_qml"] }
+reqwest = { version = "0.12", features = ["blocking", "json"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+zbus = { version = "5.14.0", features = ["blocking"] }
+
+[build-dependencies]
+cxx-qt-build = "0.8.1"
+cxx-gen = "=0.7.176"
