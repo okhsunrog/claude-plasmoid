@@ -166,7 +166,7 @@ PlasmoidItem {
             visible: usage.error !== ""
             text: usage.error
             color: Kirigami.Theme.negativeTextColor
-            font.pixelSize: 10
+            font: Kirigami.Theme.smallFont
             wrapMode: Text.WordWrap
             Layout.maximumWidth: parent.implicitWidth - Kirigami.Units.gridUnit * 2
         }
@@ -300,7 +300,7 @@ PlasmoidItem {
             anchors.topMargin: 4
             anchors.horizontalCenter: parent.horizontalCenter
             text: donut.label
-            font.pixelSize: 11
+            font: Kirigami.Theme.smallFont
             color: Kirigami.Theme.disabledTextColor
         }
     }
