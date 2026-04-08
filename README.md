@@ -71,9 +71,9 @@ claude-plasmoid/
 ### Data flow
 
 1. A QML `Timer` fires every 60 s and calls `usage.refresh()`.
-2. The Rust `ClaudeUsage` QObject reads credentials from KWallet (first call only — subsequent calls reuse the in-memory copy).
-3. It issues a blocking `reqwest` GET to `{proxy_url}/admin/oauth/usage` with HTTP Basic auth.
-4. The `SubscriptionUsageResponse` JSON is deserialized and its fields are exposed as Qt properties (`five_hour_util`, `seven_day_util`, `seven_day_sonnet_util`, `extra_usage_*`, `five_hour_resets_at`, etc.).
+2. The Rust `ClaudeUsage` QObject reads credentials from KWallet over D-Bus.
+3. A background `std::thread` is spawned that issues a blocking `reqwest` GET to `{proxy_url}/admin/oauth/usage` with HTTP Basic auth. The HTTP call never runs on the Qt thread, so `plasmashell` stays responsive even if the proxy is slow or unreachable.
+4. On completion, the worker thread posts a closure back to the Qt event loop via `cxx_qt::Threading::qt_thread().queue(...)`. That closure deserializes the `SubscriptionUsage` JSON and writes the results into Qt properties (`five_hour_util`, `seven_day_util`, `seven_day_sonnet_util`, `extra_usage_*`, `five_hour_resets_at`, etc.).
 5. QML bindings on those properties update the donut charts and popup cards automatically.
 
 ### KWallet via zbus
