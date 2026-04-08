@@ -239,7 +239,13 @@ PlasmoidItem {
         property color color: "#ffffff"
         property string label: ""
         property real size: 100
-        property color ringColor: Kirigami.Theme.separatorColor
+        // Background ring: semi-transparent text color (light on dark, dark on light)
+        property color ringColor: Qt.rgba(
+            Kirigami.Theme.textColor.r,
+            Kirigami.Theme.textColor.g,
+            Kirigami.Theme.textColor.b,
+            0.15
+        )
         property color unknownColor: Kirigami.Theme.disabledTextColor
 
         width: size
