@@ -201,7 +201,7 @@ PlasmoidItem {
 
             PlasmaComponents.Label {
                 text: card.title
-                font: Kirigami.Theme.smallFont
+                font.pixelSize: Kirigami.Theme.smallFont.pixelSize
                 font.bold: true
                 color: Kirigami.Theme.disabledTextColor
             }
