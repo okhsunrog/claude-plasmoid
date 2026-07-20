@@ -12,6 +12,9 @@ trait KWallet {
     #[zbus(name = "networkWallet")]
     fn network_wallet(&self) -> zbus::Result<String>;
 
+    #[zbus(name = "isOpen")]
+    fn is_open(&self, wallet: &str) -> zbus::Result<bool>;
+
     #[zbus(name = "open")]
     fn open(&self, wallet: &str, wid: i64, appid: &str) -> zbus::Result<i32>;
 
@@ -55,8 +58,13 @@ pub fn read_credentials() -> Result<Credentials, String> {
     let proxy = KWalletProxyBlocking::new(&conn).map_err(|e| e.to_string())?;
 
     let wallet = proxy.network_wallet().map_err(|e| e.to_string())?;
-    // wid=0: plasmoids don't have a meaningful X11/Wayland window ID. kwalletd falls back to
-    // centering the unlock dialog on screen, which is acceptable.
+    // Never prompt from the periodic refresh: open() on a closed wallet pops the
+    // unlock dialog, which would reappear every timer tick. Only user-initiated
+    // writes (save_credentials) may prompt.
+    let open = proxy.is_open(&wallet).map_err(|e| e.to_string())?;
+    if !open {
+        return Err("KWallet is locked — unlock it to continue".to_string());
+    }
     let handle = proxy.open(&wallet, 0, APP_ID).map_err(|e| e.to_string())?;
     if handle < 0 {
         return Err("KWallet is locked or unavailable".to_string());
@@ -74,7 +82,7 @@ pub fn read_credentials() -> Result<Credentials, String> {
 
     let _ = proxy.close(handle, false, APP_ID);
 
-    if url.is_empty() || username.is_empty() {
+    if url.is_empty() || username.is_empty() || password.is_empty() {
         return Err("No credentials stored — configure in the applet".to_string());
     }
 
@@ -90,6 +98,8 @@ pub fn write_credentials(url: &str, username: &str, password: &str) -> Result<()
     let proxy = KWalletProxyBlocking::new(&conn).map_err(|e| e.to_string())?;
 
     let wallet = proxy.network_wallet().map_err(|e| e.to_string())?;
+    // wid=0: plasmoids don't have a meaningful X11/Wayland window ID. kwalletd falls back to
+    // centering the unlock dialog on screen, which is acceptable for this user-initiated call.
     let handle = proxy.open(&wallet, 0, APP_ID).map_err(|e| e.to_string())?;
     if handle < 0 {
         return Err("KWallet is locked or unavailable".to_string());

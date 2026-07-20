@@ -147,9 +147,10 @@ PlasmoidItem {
             }
             LimitCard {
                 Layout.fillWidth: true
-                title: "WEEKLY (SONNET)"
-                util: usage.seven_day_sonnet_util
-                subtitle: formatReset(usage.seven_day_sonnet_resets_at)
+                visible: usage.seven_day_model_name !== ""
+                title: "WEEKLY (" + usage.seven_day_model_name.toUpperCase() + ")"
+                util: usage.seven_day_model_util
+                subtitle: formatReset(usage.seven_day_model_resets_at)
             }
             LimitCard {
                 Layout.fillWidth: true
@@ -272,9 +273,10 @@ PlasmoidItem {
                 ctx.lineWidth = thick
                 ctx.stroke()
 
-                // Value arc
+                // Value arc (clamped so >100% doesn't wrap past a full circle)
                 if (donut.value >= 0) {
-                    const end = -Math.PI / 2 + (donut.value / 100) * 2 * Math.PI
+                    const clamped = Math.min(donut.value, 100)
+                    const end = -Math.PI / 2 + (clamped / 100) * 2 * Math.PI
                     ctx.beginPath()
                     ctx.arc(cx, cy, r, -Math.PI / 2, end)
                     ctx.strokeStyle = donut.color
@@ -294,6 +296,7 @@ PlasmoidItem {
             Connections {
                 target: donut
                 function onValueChanged() { canvas.requestPaint() }
+                function onColorChanged() { canvas.requestPaint() }
                 function onRingColorChanged() { canvas.requestPaint() }
                 function onUnknownColorChanged() { canvas.requestPaint() }
             }
