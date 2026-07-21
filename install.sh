@@ -62,7 +62,7 @@ fi
 echo ""
 echo "Done. To activate:"
 echo "  1. Log out and back in (so plasmashell picks up the new QML path)"
-echo "     — or restart plasmashell: kquitapp6 plasmashell && kstart6 plasmashell"
+echo "     — or restart plasmashell: kquitapp6 plasmashell && kstart plasmashell"
 echo "  2. Right-click the panel → Add Widgets → search 'Claude Usage'"
 echo "  3. Drag it to the panel"
 echo ""
@@ -74,7 +74,7 @@ if [ "$RESTART" -eq 1 ]; then
     echo "Restarting plasmashell..."
     # Run restart in a subshell detached from this terminal, so killing
     # plasmashell doesn't take the terminal with it.
-    nohup bash -c 'kquitapp6 plasmashell; sleep 2; kstart6 plasmashell' \
+    nohup bash -c 'kquitapp6 plasmashell; sleep 2; kstart plasmashell' \
         > /tmp/plasmashell-restart.log 2>&1 &
     echo "Plasmashell restarting in background (log: /tmp/plasmashell-restart.log)"
 fi
