@@ -20,6 +20,17 @@ PlasmoidItem {
         onTriggered: usage.refresh()
     }
 
+    // Wall-clock for the "received Xs ago" label; ticks only while the
+    // popup is open.
+    property double nowMs: Date.now()
+    Timer {
+        interval: 1000
+        running: root.expanded
+        repeat: true
+        triggeredOnStart: true
+        onTriggered: root.nowMs = Date.now()
+    }
+
     // Compact: two donuts filling the panel height
     compactRepresentation: MouseArea {
         id: compactRoot
@@ -72,6 +83,16 @@ PlasmoidItem {
         const HH = String(d.getHours()).padStart(2, "0")
         const MM = String(d.getMinutes()).padStart(2, "0")
         return "Resets in " + rel + " (" + dd + "/" + mm + ", " + HH + ":" + MM + ")"
+    }
+
+    function formatAge(ms, now) {
+        if (ms <= 0) return ""
+        const s = Math.max(0, Math.round((now - ms) / 1000))
+        if (s < 60) return s + "s ago"
+        const m = Math.floor(s / 60)
+        if (m < 60) return m + "m " + (s % 60) + "s ago"
+        const h = Math.floor(m / 60)
+        return h + "h " + (m % 60) + "m ago"
     }
 
     // Popup
@@ -172,13 +193,31 @@ PlasmoidItem {
             Layout.maximumWidth: parent.implicitWidth - Kirigami.Units.gridUnit * 2
         }
 
-        // Reconfigure link
-        PlasmaComponents.Button {
+        // Refresh / Reconfigure + freshness of the displayed data
+        RowLayout {
             visible: usage.configured
             Layout.alignment: Qt.AlignHCenter
-            flat: true
-            text: "Reconfigure"
-            onClicked: usage.clear_credentials()
+            spacing: Kirigami.Units.smallSpacing
+
+            PlasmaComponents.Button {
+                flat: true
+                icon.name: "view-refresh"
+                text: "Refresh"
+                onClicked: usage.refresh()
+            }
+            PlasmaComponents.Button {
+                flat: true
+                text: "Reconfigure"
+                onClicked: usage.clear_credentials()
+            }
+        }
+
+        PlasmaComponents.Label {
+            visible: usage.configured && usage.updated_at > 0
+            Layout.alignment: Qt.AlignHCenter
+            text: "Data received " + formatAge(usage.updated_at, root.nowMs)
+            font: Kirigami.Theme.smallFont
+            color: Kirigami.Theme.disabledTextColor
         }
     }
 

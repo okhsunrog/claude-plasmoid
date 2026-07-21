@@ -21,6 +21,8 @@ pub mod qobject {
         #[qproperty(f64, extra_usage_limit)]
         #[qproperty(bool, extra_usage_enabled)]
         #[qproperty(QString, error)]
+        /// Epoch ms when the displayed data was received; 0 = never
+        #[qproperty(f64, updated_at)]
         /// true once credentials are stored in KWallet
         #[qproperty(bool, configured)]
         type ClaudeUsage = super::ClaudeUsageRust;
@@ -66,6 +68,7 @@ pub struct ClaudeUsageRust {
     extra_usage_limit: f64, // in cents (divide by 100 for USD)
     extra_usage_enabled: bool,
     error: QString,
+    updated_at: f64,
     configured: bool,
     refresh_in_flight: Arc<AtomicBool>,
 }
@@ -229,6 +232,11 @@ impl qobject::ClaudeUsage {
                         qobj.as_mut().set_extra_usage_util(ex_util);
                         qobj.as_mut().set_extra_usage_used(ex_used);
                         qobj.as_mut().set_extra_usage_limit(ex_limit);
+                        let now_ms = std::time::SystemTime::now()
+                            .duration_since(std::time::UNIX_EPOCH)
+                            .map(|d| d.as_millis() as f64)
+                            .unwrap_or(0.0);
+                        qobj.as_mut().set_updated_at(now_ms);
                         qobj.as_mut().set_error(QString::from(""));
                     }
                     Err(RefreshError::NoCredentials(e)) => {
