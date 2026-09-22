@@ -69,9 +69,9 @@ PlasmoidItem {
         return Kirigami.Theme.negativeTextColor
     }
 
-    function formatReset(iso) {
+    function formatReset(iso, nowMs) {
         if (!iso) return ""
-        const now = new Date()
+        const now = new Date(nowMs)
         const d = new Date(iso)
         let diff = Math.max(0, (d - now) / 1000)
         const days = Math.floor(diff / 86400); diff -= days * 86400
@@ -158,20 +158,20 @@ PlasmoidItem {
                 Layout.fillWidth: true
                 title: "SESSION (5H)"
                 util: usage.five_hour_util
-                subtitle: formatReset(usage.five_hour_resets_at)
+                subtitle: formatReset(usage.five_hour_resets_at, root.nowMs)
             }
             LimitCard {
                 Layout.fillWidth: true
                 title: "WEEKLY (ALL)"
                 util: usage.seven_day_util
-                subtitle: formatReset(usage.seven_day_resets_at)
+                subtitle: formatReset(usage.seven_day_resets_at, root.nowMs)
             }
             LimitCard {
                 Layout.fillWidth: true
                 visible: usage.seven_day_model_name !== ""
                 title: "WEEKLY (" + usage.seven_day_model_name.toUpperCase() + ")"
                 util: usage.seven_day_model_util
-                subtitle: formatReset(usage.seven_day_model_resets_at)
+                subtitle: formatReset(usage.seven_day_model_resets_at, root.nowMs)
             }
             LimitCard {
                 Layout.fillWidth: true
